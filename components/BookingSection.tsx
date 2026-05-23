@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { CalEmbed } from "@/components/CalEmbed"
+import { BookingForm } from "@/components/BookingForm"
 import { siteConfig } from "@/config/site"
 import { ChevronLeft, Heart, Star, Shield, Trophy, Users, Dumbbell, Swords } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
@@ -74,8 +74,8 @@ export function BookingSection() {
               <ChevronLeft className="h-4 w-4" />
               Change program
             </button>
-            <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-              <CalEmbed slug={selectedSlug} />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <BookingForm slug={selectedSlug} />
             </div>
           </>
         )}
