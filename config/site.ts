@@ -50,10 +50,16 @@ export const siteConfig = {
         description: "45 min · Mon/Tue/Wed/Thu 5:30 PM",
       },
       {
-        slug: "legacy",
+        slug: "legacy-45",
         label: "Legacy",
         ageRange: "Ages 8–12",
-        description: "45 min · Tue/Thu 6:15 PM · Fri 5:30 PM",
+        description: "45 min · Tue/Thu 6:15 PM",
+      },
+      {
+        slug: "legacy-60",
+        label: "Legacy",
+        ageRange: "Ages 8–12",
+        description: "60 min · Fri 5:30 PM",
       },
       {
         slug: "elite-comp-team",

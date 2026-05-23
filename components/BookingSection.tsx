@@ -9,7 +9,8 @@ import type { LucideIcon } from "lucide-react"
 const classIcons: Record<string, LucideIcon> = {
   "toddler-and-me": Heart,
   "little-champions": Star,
-  "legacy": Shield,
+  "legacy-45": Shield,
+  "legacy-60": Shield,
   "elite-comp-team": Trophy,
   "adult-juvenile-fundamentals": Users,
   "adult-jiu-jitsu": Swords,
