@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/config/site"
+import { saveLead } from "@/lib/redis"
 
 export async function POST(req: NextRequest) {
-  const { name, email, phone, program, day, time } = await req.json()
+  const { name, email, phone, program, day, time, lead_id, utm_source, utm_campaign } = await req.json()
 
   if (!name || !email || !program || !day || !time) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -12,24 +13,22 @@ export async function POST(req: NextRequest) {
     name,
     email,
     phone: phone ?? "",
-    lead_id: "",
+    lead_id: lead_id ?? "",
     scheduled_at: `${day} ${time}`,
     source: "manual_booking_page",
-    utm_source: "",
-    utm_campaign: "",
+    utm_source: utm_source ?? "",
+    utm_campaign: utm_campaign ?? "",
     program,
   }
 
-  try {
-    const backendUrl = process.env.ROLLCALL_BACKEND_URL ?? siteConfig.webhook.leadEndpoint
-    await fetch(backendUrl, {
+  await Promise.allSettled([
+    fetch(process.env.ROLLCALL_BACKEND_URL ?? siteConfig.webhook.leadEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(leadPayload),
-    })
-  } catch (err) {
-    console.error("Error forwarding to rollcall backend:", err)
-  }
+    }),
+    saveLead({ name, email, phone: phone ?? "", program, day, time, lead_id: lead_id ?? "", utm_source: utm_source ?? "", utm_campaign: utm_campaign ?? "" }),
+  ])
 
   return NextResponse.json({ success: true })
 }

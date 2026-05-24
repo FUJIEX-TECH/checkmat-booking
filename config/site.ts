@@ -42,6 +42,7 @@ export const siteConfig = {
         label: "Toddler and Me",
         ageRange: "Ages 2–4",
         description: "30 min · Tuesdays 2:30 PM",
+        durationMin: 30,
         slots: [
           { day: "Tuesday", time: "2:30 PM" },
         ],
@@ -51,6 +52,7 @@ export const siteConfig = {
         label: "Little Champions",
         ageRange: "Ages 4–7",
         description: "45 min · Mon/Tue/Wed/Thu 5:30 PM",
+        durationMin: 45,
         slots: [
           { day: "Monday", time: "5:30 PM" },
           { day: "Tuesday", time: "5:30 PM" },
@@ -63,6 +65,7 @@ export const siteConfig = {
         label: "Legacy",
         ageRange: "Ages 8–12",
         description: "45 min · Tue/Thu 6:15 PM",
+        durationMin: 45,
         slots: [
           { day: "Tuesday", time: "6:15 PM" },
           { day: "Thursday", time: "6:15 PM" },
@@ -73,6 +76,7 @@ export const siteConfig = {
         label: "Legacy",
         ageRange: "Ages 8–12",
         description: "60 min · Fri 5:30 PM",
+        durationMin: 60,
         slots: [
           { day: "Friday", time: "5:30 PM" },
         ],
@@ -82,6 +86,7 @@ export const siteConfig = {
         label: "Elite Comp Team",
         ageRange: "Invite Only",
         description: "45 min · Mon/Wed 6:15 PM · Tue/Thu 7:00 PM",
+        durationMin: 45,
         slots: [
           { day: "Monday", time: "6:15 PM" },
           { day: "Tuesday", time: "7:00 PM" },
@@ -94,6 +99,7 @@ export const siteConfig = {
         label: "Adult/Juvenile Fundamentals",
         ageRange: "All Ages",
         description: "45 min · Mon–Thu 7:00 PM",
+        durationMin: 45,
         slots: [
           { day: "Monday", time: "7:00 PM" },
           { day: "Tuesday", time: "7:00 PM" },
@@ -106,6 +112,7 @@ export const siteConfig = {
         label: "Adult Jiu-Jitsu",
         ageRange: "Adults",
         description: "60 min · Mon/Wed 6:00 AM · Mon–Thu 7:45 PM · Fri 6:30 PM",
+        durationMin: 60,
         slots: [
           { day: "Monday", time: "6:00 AM" },
           { day: "Monday", time: "7:45 PM" },
@@ -121,6 +128,7 @@ export const siteConfig = {
         label: "Youth Wrestling",
         ageRange: "Ages 8–14",
         description: "60 min · Mon 5:00 PM",
+        durationMin: 60,
         slots: [
           { day: "Monday", time: "5:00 PM" },
         ],
@@ -130,6 +138,7 @@ export const siteConfig = {
         label: "Youth Muay Thai",
         ageRange: "Ages 8–14",
         description: "60 min · Mon/Thu 5:10 PM",
+        durationMin: 60,
         slots: [
           { day: "Monday", time: "5:10 PM" },
           { day: "Thursday", time: "5:10 PM" },
@@ -140,6 +149,7 @@ export const siteConfig = {
         label: "Adult Muay Thai",
         ageRange: "Adults",
         description: "60 min · Mon/Thu 6:00 PM",
+        durationMin: 60,
         slots: [
           { day: "Monday", time: "6:00 PM" },
           { day: "Thursday", time: "6:00 PM" },
