@@ -19,6 +19,8 @@ function addMinutes(time: string, minutes: number): string {
   return `${newH}:${newM.toString().padStart(2, "0")} ${newPeriod}`
 }
 
+type Slot = { day: string; time: string; durationMin?: number }
+
 interface Props {
   slug: string
 }
@@ -49,11 +51,15 @@ export function BookingForm({ slug }: Props) {
 
   if (!cls) return null
 
-  const duration = cls.description.match(/(\d+)\s*min/)?.[1]
+  const slots = cls.slots as Slot[]
+  const selectedSlotData = selectedSlot
+    ? slots.find((s) => `${s.day}|${s.time}` === selectedSlot)
+    : null
+  const bannerDuration = selectedSlotData?.durationMin ?? cls.durationMin
 
-  const groupedSlots = cls.slots.reduce<Record<string, string[]>>((acc, s) => {
+  const groupedSlots = slots.reduce<Record<string, Slot[]>>((acc, s) => {
     if (!acc[s.day]) acc[s.day] = []
-    acc[s.day].push(s.time)
+    acc[s.day].push(s)
     return acc
   }, {})
 
@@ -104,12 +110,10 @@ export function BookingForm({ slug }: Props) {
               )}
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-white/60">
-              {duration && (
-                <span className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-[#C8102E]" />
-                  {duration} minutes
-                </span>
-              )}
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-[#C8102E]" />
+                {bannerDuration} minutes
+              </span>
               <span className="flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-[#C8102E]" />
                 {siteConfig.business.address}
@@ -131,10 +135,10 @@ export function BookingForm({ slug }: Props) {
               <div key={day} className="rounded-xl bg-white/5 border border-white/10 p-4">
                 <p className="text-white/50 text-xs uppercase tracking-widest font-semibold mb-3">{day}</p>
                 <div className="flex flex-wrap gap-2">
-                  {groupedSlots[day].map((time) => {
-                    const val = `${day}|${time}`
+                  {groupedSlots[day].map((s) => {
+                    const val = `${s.day}|${s.time}`
                     const selected = selectedSlot === val
-                    const endTime = addMinutes(time, cls.durationMin)
+                    const endTime = addMinutes(s.time, s.durationMin ?? cls.durationMin)
                     return (
                       <button
                         key={val}
@@ -150,7 +154,7 @@ export function BookingForm({ slug }: Props) {
                           ? <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" />
                           : <Clock className="h-3.5 w-3.5 flex-shrink-0 text-white/40" />
                         }
-                        {time} – {endTime}
+                        {s.time} – {endTime}
                       </button>
                     )
                   })}

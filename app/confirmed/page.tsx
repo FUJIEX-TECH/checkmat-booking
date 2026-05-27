@@ -13,8 +13,40 @@ declare global {
   }
 }
 
-function formatIcsDate(isoString: string): string {
-  return isoString.replace(/[-:]/g, "").split(".")[0] + "Z"
+const DAYS_ORDER = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+// Parses "Tuesday 6:15 PM" → next occurrence as a local Date object
+function parseScheduledAt(scheduledAt: string): Date | null {
+  const spaceIdx = scheduledAt.indexOf(" ")
+  if (spaceIdx === -1) return null
+
+  const dayName = scheduledAt.slice(0, spaceIdx)
+  const timeStr = scheduledAt.slice(spaceIdx + 1)
+
+  const targetDay = DAYS_ORDER.indexOf(dayName)
+  if (targetDay === -1) return null
+
+  const today = new Date()
+  const daysUntil = ((targetDay - today.getDay() + 7) % 7) || 7
+  const next = new Date(today)
+  next.setDate(today.getDate() + daysUntil)
+
+  const timeMatch = timeStr.match(/^(\d+):(\d+)\s*(AM|PM)$/i)
+  if (!timeMatch) return null
+
+  let hours = parseInt(timeMatch[1])
+  const minutes = parseInt(timeMatch[2])
+  if (timeMatch[3].toUpperCase() === "PM" && hours !== 12) hours += 12
+  if (timeMatch[3].toUpperCase() === "AM" && hours === 12) hours = 0
+
+  next.setHours(hours, minutes, 0, 0)
+  return next
+}
+
+// Formats a Date as YYYYMMDDTHHMMSS (local time, no Z) for iCal/Google Calendar
+function formatIcsDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}00`
 }
 
 function ConfirmedInner() {
@@ -24,6 +56,7 @@ function ConfirmedInner() {
   const name = params.get("name") ?? ""
 
   const scheduledAt = params.get("scheduled_at") ?? ""
+  const eventDate = scheduledAt ? parseScheduledAt(scheduledAt) : null
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
@@ -31,45 +64,42 @@ function ConfirmedInner() {
     }
   }, [])
 
-  const formattedDate = scheduledAt
-    ? new Date(scheduledAt).toLocaleDateString("en-US", {
+  const formattedDate = eventDate
+    ? eventDate.toLocaleDateString("en-US", {
         weekday: "long",
         month: "long",
         day: "numeric",
         year: "numeric",
-        timeZone: siteConfig.business.timezone,
       })
     : date
 
-  const formattedTime = scheduledAt
-    ? new Date(scheduledAt).toLocaleTimeString("en-US", {
+  const formattedTime = eventDate
+    ? eventDate.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
-        timeZone: siteConfig.business.timezone,
-        timeZoneName: "short",
       })
     : time
 
-  const googleCalUrl = scheduledAt
+  const googleCalUrl = eventDate
     ? (() => {
-        const start = formatIcsDate(scheduledAt)
-        const endDt = new Date(new Date(scheduledAt).getTime() + 60 * 60 * 1000)
-        const end = formatIcsDate(endDt.toISOString())
+        const start = formatIcsDate(eventDate)
+        const endDt = new Date(eventDate.getTime() + 60 * 60 * 1000)
+        const end = formatIcsDate(endDt)
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Free+BJJ+Trial+at+Checkmat+Brentwood&dates=${start}/${end}&location=640+Harvest+Park+Drive+Brentwood+CA+94513&details=Your+free+trial+class+at+Checkmat+Brentwood.+Arrive+10+minutes+early.`
       })()
     : "#"
 
-  const icsContent = scheduledAt
+  const icsContent = eventDate
     ? (() => {
-        const start = formatIcsDate(scheduledAt)
-        const endDt = new Date(new Date(scheduledAt).getTime() + 60 * 60 * 1000)
-        const end = formatIcsDate(endDt.toISOString())
+        const start = formatIcsDate(eventDate)
+        const endDt = new Date(eventDate.getTime() + 60 * 60 * 1000)
+        const end = formatIcsDate(endDt)
         return [
           "BEGIN:VCALENDAR",
           "VERSION:2.0",
           "BEGIN:VEVENT",
-          `DTSTART:${start}`,
-          `DTEND:${end}`,
+          `DTSTART;TZID=${siteConfig.business.timezone}:${start}`,
+          `DTEND;TZID=${siteConfig.business.timezone}:${end}`,
           "SUMMARY:Free BJJ Trial at Checkmat Brentwood",
           "LOCATION:640 Harvest Park Drive Brentwood CA 94513",
           "DESCRIPTION:Your free trial class. Arrive 10 minutes early.",

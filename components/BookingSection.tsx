@@ -3,20 +3,24 @@
 import { useState } from "react"
 import { BookingForm } from "@/components/BookingForm"
 import { siteConfig } from "@/config/site"
-import { ChevronLeft, Heart, Star, Shield, Trophy, Users, Dumbbell, Swords } from "lucide-react"
+import { ChevronLeft, Heart, Star, Shield, Trophy, Users, Dumbbell, Swords, Flame, Zap } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 const classIcons: Record<string, LucideIcon> = {
   "toddler-and-me": Heart,
   "little-champions": Star,
-  "legacy-45": Shield,
-  "legacy-60": Shield,
-  "elite-comp-team": Trophy,
-  "adult-juvenile-fundamentals": Users,
-  "adult-jiu-jitsu": Swords,
-  "youth-wrestling": Dumbbell,
-  "youth-muay-thai": Dumbbell,
-  "adult-muay-thai": Dumbbell,
+  "wrestling-kids": Dumbbell,
+  "muay-thai-kids": Flame,
+  "mma-no-gi-kids": Zap,
+  "legacy": Shield,
+  "elite-competition": Trophy,
+  "muay-thai": Flame,
+  "womens-class": Heart,
+  "bjj-fundamentals": Users,
+  "no-gi": Swords,
+  "bjj-all-levels": Swords,
+  "all-levels-specific-training": Zap,
+  "drills-and-rolls": Zap,
 }
 
 export function BookingSection() {
