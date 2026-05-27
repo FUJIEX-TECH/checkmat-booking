@@ -8,16 +8,6 @@ import { CheckCircle, Loader2, Clock, Calendar, MapPin, User, Mail, Phone } from
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-function addMinutes(time: string, minutes: number): string {
-  const [timePart, period] = time.split(" ")
-  const [h, m] = timePart.split(":").map(Number)
-  let total = (h % 12) * 60 + m + (period === "PM" ? 720 : 0) + minutes
-  const newPeriod = total >= 720 && total < 1440 ? "PM" : "AM"
-  total = total % 1440
-  const newH = Math.floor(total / 60) % 12 || 12
-  const newM = total % 60
-  return `${newH}:${newM.toString().padStart(2, "0")} ${newPeriod}`
-}
 
 type Slot = { day: string; time: string; durationMin?: number }
 
@@ -52,10 +42,6 @@ export function BookingForm({ slug }: Props) {
   if (!cls) return null
 
   const slots = cls.slots as Slot[]
-  const selectedSlotData = selectedSlot
-    ? slots.find((s) => `${s.day}|${s.time}` === selectedSlot)
-    : null
-  const bannerDuration = selectedSlotData?.durationMin ?? cls.durationMin
 
   const groupedSlots = slots.reduce<Record<string, Slot[]>>((acc, s) => {
     if (!acc[s.day]) acc[s.day] = []
@@ -111,10 +97,6 @@ export function BookingForm({ slug }: Props) {
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-white/60">
               <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-[#C8102E]" />
-                {bannerDuration} minutes
-              </span>
-              <span className="flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-[#C8102E]" />
                 {siteConfig.business.address}
               </span>
@@ -138,7 +120,6 @@ export function BookingForm({ slug }: Props) {
                   {groupedSlots[day].map((s) => {
                     const val = `${s.day}|${s.time}`
                     const selected = selectedSlot === val
-                    const endTime = addMinutes(s.time, s.durationMin ?? cls.durationMin)
                     return (
                       <button
                         key={val}
@@ -154,7 +135,7 @@ export function BookingForm({ slug }: Props) {
                           ? <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" />
                           : <Clock className="h-3.5 w-3.5 flex-shrink-0 text-white/40" />
                         }
-                        {s.time} – {endTime}
+                        {s.time}
                       </button>
                     )
                   })}

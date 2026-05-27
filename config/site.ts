@@ -41,7 +41,7 @@ export const siteConfig = {
         slug: "toddler-and-me",
         label: "Toddler & Me",
         ageRange: "Ages 2–4",
-        description: "30 min · Tue 2:30 PM",
+        description: "Tue 2:30 PM",
         durationMin: 30,
         slots: [
           { day: "Tuesday", time: "2:30 PM" },
@@ -51,7 +51,7 @@ export const siteConfig = {
         slug: "little-champions",
         label: "Little Champions",
         ageRange: "Ages 4–7",
-        description: "45 min · Mon/Tue/Wed/Thu 5:30 PM",
+        description: "Mon/Tue/Wed/Thu 5:30 PM",
         durationMin: 45,
         slots: [
           { day: "Monday", time: "5:30 PM" },
@@ -64,7 +64,7 @@ export const siteConfig = {
         slug: "wrestling-kids",
         label: "Wrestling Kids",
         ageRange: "Ages 8–12",
-        description: "60 min · Mon/Wed 5:00 PM",
+        description: "Mon/Wed 5:00 PM",
         durationMin: 60,
         slots: [
           { day: "Monday", time: "5:00 PM" },
@@ -75,7 +75,7 @@ export const siteConfig = {
         slug: "muay-thai-kids",
         label: "Muay Thai Kids",
         ageRange: "Ages 8–12",
-        description: "60 min · Tue/Thu 5:10 PM",
+        description: "Tue/Thu 5:10 PM",
         durationMin: 60,
         slots: [
           { day: "Tuesday", time: "5:10 PM" },
@@ -86,7 +86,7 @@ export const siteConfig = {
         slug: "mma-no-gi-kids",
         label: "MMA – No Gi Kids",
         ageRange: "Ages 8–12",
-        description: "30 min · Fri 5:30 PM",
+        description: "Fri 5:30 PM",
         durationMin: 30,
         slots: [
           { day: "Friday", time: "5:30 PM" },
@@ -96,7 +96,7 @@ export const siteConfig = {
         slug: "legacy",
         label: "Legacy Kids",
         ageRange: "Ages 8–12",
-        description: "45 min · Tue/Thu 6:15 PM",
+        description: "Tue/Thu 6:15 PM",
         durationMin: 45,
         slots: [
           { day: "Tuesday", time: "6:15 PM" },
@@ -107,7 +107,7 @@ export const siteConfig = {
         slug: "elite-competition",
         label: "Elite Competition",
         ageRange: "Ages 8–12",
-        description: "45 min · Mon/Wed 6:15 PM · Tue/Thu 7:00 PM",
+        description: "Mon/Wed 6:15 PM · Tue/Thu 7:00 PM",
         durationMin: 45,
         slots: [
           { day: "Monday", time: "6:15 PM" },
@@ -120,7 +120,7 @@ export const siteConfig = {
         slug: "muay-thai",
         label: "Muay Thai",
         ageRange: "Ages 13+",
-        description: "60 min · Mon/Tue/Thu 6:00 PM",
+        description: "Mon/Tue/Thu 6:00 PM",
         durationMin: 60,
         slots: [
           { day: "Monday", time: "6:00 PM" },
@@ -132,7 +132,7 @@ export const siteConfig = {
         slug: "womens-class",
         label: "Women's Class",
         ageRange: "Ages 13+",
-        description: "60 min · Sat 9:30 AM",
+        description: "Sat 9:30 AM",
         durationMin: 60,
         slots: [
           { day: "Saturday", time: "9:30 AM" },
@@ -142,7 +142,7 @@ export const siteConfig = {
         slug: "bjj-fundamentals",
         label: "BJJ Fundamentals",
         ageRange: "Ages 13+",
-        description: "45 min · Mon–Thu 7:00 PM",
+        description: "Mon–Thu 7:00 PM",
         durationMin: 45,
         slots: [
           { day: "Monday", time: "7:00 PM" },
@@ -155,7 +155,7 @@ export const siteConfig = {
         slug: "no-gi",
         label: "No Gi",
         ageRange: "Ages 13+",
-        description: "60 min · Tue 7:45 PM · Fri 6:30 PM",
+        description: "Tue 7:45 PM · Fri 6:30 PM",
         durationMin: 60,
         slots: [
           { day: "Tuesday", time: "7:45 PM" },
@@ -166,7 +166,7 @@ export const siteConfig = {
         slug: "bjj-all-levels",
         label: "BJJ – All Levels",
         ageRange: "Ages 13+",
-        description: "60 min · Mon/Wed/Thu 7:45 PM",
+        description: "Mon/Wed/Thu 7:45 PM",
         durationMin: 60,
         slots: [
           { day: "Monday", time: "7:45 PM" },
@@ -178,7 +178,7 @@ export const siteConfig = {
         slug: "all-levels-specific-training",
         label: "All Levels Specific Training",
         ageRange: "Ages 13+",
-        description: "60 min · Fri 10:30 AM",
+        description: "Fri 10:30 AM",
         durationMin: 60,
         slots: [
           { day: "Friday", time: "10:30 AM" },
@@ -188,7 +188,7 @@ export const siteConfig = {
         slug: "drills-and-rolls",
         label: "Drills & Rolls",
         ageRange: "Ages 13+",
-        description: "60 min · Fri 10:30 AM · Fri 6:30 PM",
+        description: "Fri 10:30 AM · Fri 6:30 PM",
         durationMin: 60,
         slots: [
           { day: "Friday", time: "10:30 AM" },
