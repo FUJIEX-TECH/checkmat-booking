@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/config/site"
 import { saveLead } from "@/lib/redis"
+import { sendBookingEmails } from "@/lib/email"
 
 export async function POST(req: NextRequest) {
   const { name, email, phone, program, day, time, lead_id, utm_source, utm_campaign } = await req.json()
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(leadPayload),
     }),
     saveLead({ name, email, phone: phone ?? "", program, day, time, lead_id: lead_id ?? "", utm_source: utm_source ?? "", utm_campaign: utm_campaign ?? "" }),
+    sendBookingEmails({ name, email, phone: phone ?? "", program, day, time }),
   ])
 
   return NextResponse.json({ success: true })
