@@ -213,7 +213,7 @@ export const siteConfig = {
       name: "Coach Thiago Gaia",
       belt: "3rd-Degree Black Belt",
       photo: "/images/coach-1.jpg",
-      bio: "Coach Thiago Gaia is a 3rd-degree Brazilian Jiu-Jitsu black belt, a professional MMA fighter, and one of the most respected instructors in the region. With over 20 years of experience in the martial arts, Thiago brings world-class knowledge, elite-level technique, and an unmatched passion for teaching to every class he leads. Born in Ilhabela, Brazil, he began training at age 10 and earned his black belt under Checkmat, awarded by Marco Barbosa on December 7, 2012. As a professional MMA fighter, Coach Thiago holds an impressive 8-1 record — all eight victories by submission — and has coached and cornered multiple UFC fighters.",
+      bio: "Coach Thiago Gaia is a 3rd-degree Brazilian Jiu-Jitsu black belt, a professional MMA fighter, and one of the most respected instructors in the region. With over 20 years of experience in the martial arts, Thiago brings world-class knowledge, elite-level technique, and an unmatched passion for teaching to every class he leads. Born in Ilhabela, Brazil, he began training at age 10 and earned his black belt on December 7, 2012. As a professional MMA fighter, Coach Thiago holds an impressive 8-1 record — all eight victories by submission — and has coached and cornered multiple UFC fighters.",
     },
   ],
   schedule: {
