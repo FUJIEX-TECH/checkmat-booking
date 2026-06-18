@@ -46,14 +46,11 @@ export async function POST(req: NextRequest) {
   const scheduledAt = (booking.startTime as string) ?? new Date().toISOString()
 
   const leadPayload = {
-    name,
-    email,
-    phone,
-    lead_id: leadId,
-    scheduled_at: scheduledAt,
-    source: "manual_booking_page",
-    utm_source: utmSource,
-    utm_campaign: utmCampaign,
+    customer: {
+      name,
+      email,
+      number: phone,
+    },
   }
 
   try {

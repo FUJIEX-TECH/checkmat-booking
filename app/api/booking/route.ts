@@ -11,15 +11,11 @@ export async function POST(req: NextRequest) {
   }
 
   const leadPayload = {
-    name,
-    email,
-    phone: phone ?? "",
-    lead_id: lead_id ?? "",
-    scheduled_at: `${day} ${time}`,
-    source: "manual_booking_page",
-    utm_source: utm_source ?? "",
-    utm_campaign: utm_campaign ?? "",
-    program,
+    customer: {
+      name,
+      email,
+      number: phone ?? "",
+    },
   }
 
   await Promise.allSettled([

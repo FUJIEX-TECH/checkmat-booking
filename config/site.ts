@@ -303,7 +303,7 @@ export const siteConfig = {
     pixelId: "989893566459320",
   },
   webhook: {
-    leadEndpoint: "https://rollcall-backend-production.up.railway.app/api/lead",
+    leadEndpoint: "https://oss-assistant-production.up.railway.app/api/lead",
   },
   seo: {
     title: "Free Trial BJJ Class — Checkmat Brentwood",
