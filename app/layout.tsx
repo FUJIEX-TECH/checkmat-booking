@@ -38,6 +38,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   icons: { icon: "/favicon.ico" },
+  verification: {
+    google: "pAU9BF52fsoOcaE63zcEavbW7ZUwwGFZEHIuAiwNR_U",
+  },
 }
 
 const PIXEL_ID = process.env.META_PIXEL_ID ?? siteConfig.meta.pixelId
