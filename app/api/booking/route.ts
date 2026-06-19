@@ -10,19 +10,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
   }
 
-  const leadPayload = {
-    customer: {
-      name,
-      email,
-      number: phone ?? "",
-    },
-  }
+  // Agendamento manual no site: o lead já resolveu, então cancelamos qualquer
+  // ligação/sequência pendente do agente para esse email (em vez de criar uma nova).
+  const leadBase = process.env.ROLLCALL_BACKEND_URL ?? siteConfig.webhook.leadEndpoint
+  const cancelEndpoint = `${leadBase}/cancel`
 
   await Promise.allSettled([
-    fetch(process.env.ROLLCALL_BACKEND_URL ?? siteConfig.webhook.leadEndpoint, {
+    fetch(cancelEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(leadPayload),
+      body: JSON.stringify({ email }),
     }),
     saveLead({ name, email, phone: phone ?? "", program, day, time, lead_id: lead_id ?? "", utm_source: utm_source ?? "", utm_campaign: utm_campaign ?? "" }),
     sendBookingEmails({ name, email, phone: phone ?? "", program, day, time }),
