@@ -43,6 +43,22 @@ function parseScheduledAt(scheduledAt: string): Date | null {
   return next
 }
 
+// Parses an ISO date (YYYY-MM-DD) + time ("6:00 PM") into a local Date object
+function parseDateTime(isoDate: string, timeStr: string): Date | null {
+  if (!isoDate) return null
+  const d = new Date(`${isoDate}T00:00:00`)
+  if (isNaN(d.getTime())) return null
+  const timeMatch = timeStr.match(/^(\d+):(\d+)\s*(AM|PM)$/i)
+  if (timeMatch) {
+    let hours = parseInt(timeMatch[1])
+    const minutes = parseInt(timeMatch[2])
+    if (timeMatch[3].toUpperCase() === "PM" && hours !== 12) hours += 12
+    if (timeMatch[3].toUpperCase() === "AM" && hours === 12) hours = 0
+    d.setHours(hours, minutes, 0, 0)
+  }
+  return d
+}
+
 // Formats a Date as YYYYMMDDTHHMMSS (local time, no Z) for iCal/Google Calendar
 function formatIcsDate(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0")
@@ -56,7 +72,8 @@ function ConfirmedInner() {
   const name = params.get("name") ?? ""
 
   const scheduledAt = params.get("scheduled_at") ?? ""
-  const eventDate = scheduledAt ? parseScheduledAt(scheduledAt) : null
+  // Novo fluxo: data ISO real + hora. Legado: scheduled_at ("Tuesday 6:15 PM")
+  const eventDate = date ? parseDateTime(date, time) : scheduledAt ? parseScheduledAt(scheduledAt) : null
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {

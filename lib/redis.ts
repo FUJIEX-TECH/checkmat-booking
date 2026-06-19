@@ -13,6 +13,7 @@ export interface Lead {
   program: string
   day: string
   time: string
+  scheduled_date?: string
   lead_id: string
   utm_source: string
   utm_campaign: string

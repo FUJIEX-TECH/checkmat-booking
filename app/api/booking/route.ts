@@ -4,7 +4,7 @@ import { saveLead } from "@/lib/redis"
 import { sendBookingEmails } from "@/lib/email"
 
 export async function POST(req: NextRequest) {
-  const { name, email, phone, program, day, time, lead_id, utm_source, utm_campaign } = await req.json()
+  const { name, email, phone, program, day, time, date, lead_id, utm_source, utm_campaign } = await req.json()
 
   if (!name || !email || !program || !day || !time) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     }),
-    saveLead({ name, email, phone: phone ?? "", program, day, time, lead_id: lead_id ?? "", utm_source: utm_source ?? "", utm_campaign: utm_campaign ?? "" }),
-    sendBookingEmails({ name, email, phone: phone ?? "", program, day, time }),
+    saveLead({ name, email, phone: phone ?? "", program, day, time, scheduled_date: date ?? "", lead_id: lead_id ?? "", utm_source: utm_source ?? "", utm_campaign: utm_campaign ?? "" }),
+    sendBookingEmails({ name, email, phone: phone ?? "", program, day, time, date: date ?? "" }),
   ])
 
   return NextResponse.json({ success: true })

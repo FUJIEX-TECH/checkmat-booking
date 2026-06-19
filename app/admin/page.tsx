@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react"
 import type { Lead } from "@/lib/redis"
 
+// Formata um instante (ISO/UTC) em um fuso específico — ex: "19/06 13:40"
+function fmtTz(iso: string, tz: string): string {
+  return new Date(iso).toLocaleString("pt-BR", {
+    timeZone: tz, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
+  })
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState("")
   const [authed, setAuthed] = useState(false)
@@ -127,9 +134,9 @@ export default function AdminPage() {
                   <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Email</th>
                   <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Telefone</th>
                   <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Programa</th>
-                  <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Horário</th>
+                  <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Aula experimental</th>
                   <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Origem</th>
-                  <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Data</th>
+                  <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Cadastro</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,7 +153,18 @@ export default function AdminPage() {
                     <td className="px-4 py-3">
                       <span className="bg-white/10 px-2 py-0.5 rounded-full text-xs font-semibold">{lead.program}</span>
                     </td>
-                    <td className="px-4 py-3 text-white/60">{lead.day} {lead.time}</td>
+                    <td className="px-4 py-3 text-white/60">
+                      {lead.scheduled_date ? (
+                        <>
+                          <span className="font-semibold text-white/80">
+                            {new Date(`${lead.scheduled_date}T00:00:00`).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })}
+                          </span>
+                          {" · "}{lead.time}
+                        </>
+                      ) : (
+                        <span className="text-white/50">{lead.day} · {lead.time}</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       {lead.utm_source || lead.lead_id ? (
                         <span className="bg-[#C8102E]/20 text-[#C8102E] border border-[#C8102E]/30 px-2 py-0.5 rounded-full text-xs font-bold">
@@ -159,7 +177,10 @@ export default function AdminPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-white/40 text-xs">
-                      {new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      <div className="leading-tight">
+                        <div>{fmtTz(lead.created_at, "America/Los_Angeles")} <span className="text-white/30">PT</span></div>
+                        <div>{fmtTz(lead.created_at, "America/Sao_Paulo")} <span className="text-white/30">BRT</span></div>
+                      </div>
                     </td>
                   </tr>
                 ))}

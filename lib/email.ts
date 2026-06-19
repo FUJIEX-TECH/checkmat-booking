@@ -11,28 +11,34 @@ interface BookingData {
   program: string
   day: string
   time: string
+  date?: string
 }
 
 export async function sendBookingEmails(data: BookingData) {
-  const { name, email, phone, program, day, time } = data
+  const { name, email, phone, program, day, time, date } = data
+
+  // Data completa quando disponível (ex: "Monday, Jun 22, 2026"); senão, o dia da semana
+  const dateLabel = date
+    ? new Date(`${date}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" })
+    : day
 
   await Promise.allSettled([
     resend.emails.send({
       from: `Checkmat Brentwood <${FROM}>`,
       to: email,
       subject: "Your Free Trial Class is Confirmed! 🥋",
-      html: confirmationEmail({ name, program, day, time }),
+      html: confirmationEmail({ name, program, dateLabel, time }),
     }),
     resend.emails.send({
       from: `Checkmat Booking <${FROM}>`,
       to: ADMIN_EMAIL,
       subject: `New Trial Class Booking — ${name}`,
-      html: notificationEmail({ name, email, phone, program, day, time }),
+      html: notificationEmail({ name, email, phone, program, dateLabel, time }),
     }),
   ])
 }
 
-function confirmationEmail({ name, program, day, time }: Omit<BookingData, "email" | "phone">) {
+function confirmationEmail({ name, program, dateLabel, time }: { name: string; program: string; dateLabel: string; time: string }) {
   return `
 <!DOCTYPE html>
 <html>
@@ -61,8 +67,8 @@ function confirmationEmail({ name, program, day, time }: Omit<BookingData, "emai
               </tr>
               <tr>
                 <td style="padding:8px 0;border-bottom:1px solid #eeeeee;">
-                  <span style="color:#888888;font-size:13px;">Day</span><br>
-                  <strong style="color:#111111;font-size:16px;">${day}</strong>
+                  <span style="color:#888888;font-size:13px;">Date</span><br>
+                  <strong style="color:#111111;font-size:16px;">${dateLabel}</strong>
                 </td>
               </tr>
               <tr>
@@ -103,7 +109,7 @@ function confirmationEmail({ name, program, day, time }: Omit<BookingData, "emai
   `.trim()
 }
 
-function notificationEmail({ name, email, phone, program, day, time }: BookingData) {
+function notificationEmail({ name, email, phone, program, dateLabel, time }: { name: string; email: string; phone: string; program: string; dateLabel: string; time: string }) {
   return `
 <!DOCTYPE html>
 <html>
@@ -124,7 +130,7 @@ function notificationEmail({ name, email, phone, program, day, time }: BookingDa
               <tr><td style="padding:10px 0;border-bottom:1px solid #eeeeee;"><span style="color:#888888;font-size:13px;">Email</span><br><a href="mailto:${email}" style="color:#C8102E;">${email}</a></td></tr>
               <tr><td style="padding:10px 0;border-bottom:1px solid #eeeeee;"><span style="color:#888888;font-size:13px;">Phone</span><br><strong style="color:#111111;">${phone || "—"}</strong></td></tr>
               <tr><td style="padding:10px 0;border-bottom:1px solid #eeeeee;"><span style="color:#888888;font-size:13px;">Program</span><br><strong style="color:#111111;">${program}</strong></td></tr>
-              <tr><td style="padding:10px 0;border-bottom:1px solid #eeeeee;"><span style="color:#888888;font-size:13px;">Day</span><br><strong style="color:#111111;">${day}</strong></td></tr>
+              <tr><td style="padding:10px 0;border-bottom:1px solid #eeeeee;"><span style="color:#888888;font-size:13px;">Date</span><br><strong style="color:#111111;">${dateLabel}</strong></td></tr>
               <tr><td style="padding:10px 0;"><span style="color:#888888;font-size:13px;">Time</span><br><strong style="color:#111111;">${time}</strong></td></tr>
             </table>
           </td>
