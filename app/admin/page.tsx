@@ -10,10 +10,19 @@ function fmtTz(iso: string, tz: string): string {
   })
 }
 
+interface Appointment {
+  leadName: string
+  email: string
+  classType: string
+  scheduledStartAt: string
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState("")
   const [authed, setAuthed] = useState(false)
   const [leads, setLeads] = useState<Lead[]>([])
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [tab, setTab] = useState<"site" | "agent">("site")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [search, setSearch] = useState("")
@@ -29,10 +38,21 @@ export default function AdminPage() {
       const data = await res.json()
       setLeads(data)
       setAuthed(true)
+      fetchAppointments(password)
     } else {
       setError("Senha incorreta.")
     }
     setLoading(false)
+  }
+
+  const fetchAppointments = async (pwd: string) => {
+    const res = await fetch("/api/admin/appointments", {
+      headers: { "x-admin-token": pwd },
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setAppointments(data.appointments ?? [])
+    }
   }
 
   const refresh = async () => {
@@ -40,6 +60,7 @@ export default function AdminPage() {
       headers: { "x-admin-token": password },
     })
     if (res.ok) setLeads(await res.json())
+    fetchAppointments(password)
   }
 
   const filtered = leads.filter((l) =>
@@ -93,6 +114,24 @@ export default function AdminPage() {
           </button>
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-white/10">
+          <button
+            onClick={() => setTab("site")}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors ${tab === "site" ? "border-[#C8102E] text-white" : "border-transparent text-white/40 hover:text-white/70"}`}
+          >
+            Agendamentos do Site ({leads.length})
+          </button>
+          <button
+            onClick={() => setTab("agent")}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors ${tab === "agent" ? "border-[#C8102E] text-white" : "border-transparent text-white/40 hover:text-white/70"}`}
+          >
+            Agente Kimura ({appointments.length})
+          </button>
+        </div>
+
+        {tab === "site" && (
+        <>
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
@@ -188,6 +227,45 @@ export default function AdminPage() {
             </table>
           </div>
         </div>
+        </>
+        )}
+
+        {tab === "agent" && (
+          <div className="rounded-2xl border border-white/10 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 bg-white/5">
+                    <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Lead</th>
+                    <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Email</th>
+                    <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Tipo de aula</th>
+                    <th className="text-left px-4 py-3 text-white/40 font-semibold uppercase tracking-widest text-xs">Aula agendada</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="text-center py-12 text-white/30">Nenhum agendamento do agente.</td>
+                    </tr>
+                  )}
+                  {appointments.map((a, i) => (
+                    <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3 font-semibold">{a.leadName}</td>
+                      <td className="px-4 py-3 text-white/60">{a.email}</td>
+                      <td className="px-4 py-3 text-white/60">{a.classType}</td>
+                      <td className="px-4 py-3 text-white/40 text-xs">
+                        <div className="leading-tight">
+                          <div>{fmtTz(a.scheduledStartAt, "America/Los_Angeles")} <span className="text-white/30">PT</span></div>
+                          <div>{fmtTz(a.scheduledStartAt, "America/Sao_Paulo")} <span className="text-white/30">BRT</span></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
