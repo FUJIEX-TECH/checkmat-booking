@@ -31,3 +31,45 @@ export async function getLeads(): Promise<Lead[]> {
   const raw = await redis.lrange("leads", 0, 499)
   return raw.map((item) => (typeof item === "string" ? JSON.parse(item) : item))
 }
+
+export type LeadStatus = "pendente" | "agendado" | "no show" | "convertido"
+
+// Status de cada lead, persistido num hash do Redis (chave = identidade normalizada do lead).
+export async function getStatuses(): Promise<Record<string, string>> {
+  const all = await redis.hgetall<Record<string, string>>("lead_status")
+  return all ?? {}
+}
+
+export async function setStatus(key: string, status: LeadStatus): Promise<void> {
+  await redis.hset("lead_status", { [key]: status })
+}
+
+// Agendamento manual feito pelo Admin para um lead que veio só do formulário do Meta.
+export interface LeadBooking {
+  program: string
+  day: string
+  time: string
+  date: string // ISO yyyy-mm-dd
+}
+
+// Leads inseridos manualmente (walk-in, telefone, teste) — entram como pendentes, sem programa.
+export interface ManualLead {
+  name: string
+  email: string
+  phone: string
+  createdTime: string
+}
+
+export async function getManualLeads(): Promise<ManualLead[]> {
+  const raw = await redis.lrange("manual_leads", 0, 199)
+  return raw.map((item) => (typeof item === "string" ? JSON.parse(item) : item))
+}
+
+export async function getBookings(): Promise<Record<string, LeadBooking>> {
+  const all = await redis.hgetall<Record<string, LeadBooking>>("lead_booking")
+  return all ?? {}
+}
+
+export async function setBooking(key: string, booking: LeadBooking): Promise<void> {
+  await redis.hset("lead_booking", { [key]: booking })
+}
