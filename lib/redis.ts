@@ -32,7 +32,14 @@ export async function getLeads(): Promise<Lead[]> {
   return raw.map((item) => (typeof item === "string" ? JSON.parse(item) : item))
 }
 
-export type LeadStatus = "pendente" | "agendado" | "no show" | "convertido"
+export type LeadStatus =
+  | "pendente"
+  | "contactado 1x"
+  | "contactado 2x"
+  | "agendado"
+  | "no-show"
+  | "matriculado"
+  | "perdido"
 
 // Status de cada lead, persistido num hash do Redis (chave = identidade normalizada do lead).
 export async function getStatuses(): Promise<Record<string, string>> {

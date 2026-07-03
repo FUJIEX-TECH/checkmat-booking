@@ -17,13 +17,24 @@ function fmtTz(iso: string, tz: string): string {
 type ClassDef ={ slug: string; label: string; ageRange: string; slots: { day: string; time: string }[] }
 const CLASSES = siteConfig.cal.classes as ClassDef[]
 
-const STATUS_OPTIONS: LeadStatus[] = ["pendente", "agendado", "no show", "convertido"]
+const STATUS_OPTIONS: LeadStatus[] = [
+  "pendente",
+  "contactado 1x",
+  "contactado 2x",
+  "agendado",
+  "no-show",
+  "matriculado",
+  "perdido",
+]
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
   pendente: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  agendado: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-  "no show": "bg-red-500/15 text-red-400 border-red-500/30",
-  convertido: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  "contactado 1x": "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  "contactado 2x": "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  agendado: "bg-violet-500/15 text-violet-400 border-violet-500/30",
+  "no-show": "bg-red-500/15 text-red-400 border-red-500/30",
+  matriculado: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  perdido: "bg-zinc-500/20 text-zinc-400 border-zinc-500/40",
 }
 
 const ORIGIN_STYLES: Record<LeadOrigin, string> = {
@@ -138,7 +149,12 @@ export default function AdminPage() {
   }
 
   const toggleSort = (col: SortCol) =>
-    setSort((s) => (s.col === col ? { col, dir: s.dir === "asc" ? "desc" : "asc" } : { col, dir: "asc" }))
+    setSort((s) => {
+      if (s.col === col) return { col, dir: s.dir === "asc" ? "desc" : "asc" }
+      // Datas começam do mais recente pro mais antigo no primeiro clique.
+      const firstDir: "asc" | "desc" = col === "trial" || col === "createdAt" ? "desc" : "asc"
+      return { col, dir: firstDir }
+    })
 
   const filtered = leads.filter((l) =>
     [l.name, l.email, l.phone, l.program, l.origin, l.status].some((v) =>
@@ -150,6 +166,13 @@ export default function AdminPage() {
     const dir = sort.dir === "asc" ? 1 : -1
     if (sort.col === "createdAt") {
       return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * dir
+    }
+    // Aula experimental: ordena pela data real (trialAt); quem não agendou vai sempre pro fim.
+    if (sort.col === "trial") {
+      if (!a.trialAt && !b.trialAt) return 0
+      if (!a.trialAt) return 1
+      if (!b.trialAt) return -1
+      return (new Date(a.trialAt).getTime() - new Date(b.trialAt).getTime()) * dir
     }
     return String(a[sort.col] ?? "").localeCompare(String(b[sort.col] ?? ""), "pt-BR") * dir
   })

@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from "next/server"
 import { isAuthorized } from "@/lib/auth"
 import { setStatus, type LeadStatus } from "@/lib/redis"
 
-const VALID: LeadStatus[] = ["pendente", "agendado", "no show", "convertido"]
+const VALID: LeadStatus[] = [
+  "pendente",
+  "contactado 1x",
+  "contactado 2x",
+  "agendado",
+  "no-show",
+  "matriculado",
+  "perdido",
+]
 
 // Atualiza o status manual de um lead (chave = identidade normalizada).
 export async function PATCH(req: NextRequest) {

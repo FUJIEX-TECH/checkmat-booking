@@ -21,7 +21,8 @@ export interface UnifiedLead {
   email: string
   phone: string
   program: string // "" quando só veio do formulário
-  trial: string // data/hora da aula experimental, "" quando só veio do formulário
+  trial: string // exibição da aula experimental (data · dia · horário), "" quando não agendou
+  trialAt: string // data/hora real da aula (ISO) para ordenação, "" quando não agendou
   origin: LeadOrigin
   status: LeadStatus
   createdAt: string // ISO
@@ -37,33 +38,50 @@ const normPhone = (p: string) => {
 const identityKey = (email: string, phone: string) =>
   normEmail(email) || normPhone(phone) || ""
 
-// Formata o instante de uma aula no fuso da academia (PT) — ex: "qua, 18/06 · 18:30".
-function fmtClass(iso: string): string {
-  const d = new Date(iso)
-  if (isNaN(d.getTime())) return ""
-  return d.toLocaleString("pt-BR", {
-    timeZone: "America/Los_Angeles",
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+// Converte horário 12h ("7:00 PM", "9:30 AM") para 24h ("19:00", "09:30").
+function to24h(t: string): string {
+  const m = t.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i)
+  if (!m) return "00:00"
+  let h = parseInt(m[1], 10)
+  const min = m[2]
+  const ap = (m[3] || "").toUpperCase()
+  if (ap === "PM" && h < 12) h += 12
+  if (ap === "AM" && h === 12) h = 0
+  return `${String(h).padStart(2, "0")}:${min}`
 }
 
-function dateTrial(date: string, time: string, day: string): string {
+interface Trial {
+  trial: string // exibição "data · dia · horário"
+  trialAt: string // ISO para ordenação
+}
+
+// A partir de uma data (yyyy-mm-dd) + horário textual ("7:00 PM") + dia da semana.
+function buildTrial(date: string, time: string, day: string): Trial {
   if (date) {
     const d = new Date(`${date}T00:00:00`)
     if (!isNaN(d.getTime())) {
-      const fmt = d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })
-      return `${fmt} · ${time}`
+      const dm = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      const wd = d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")
+      return { trial: `${dm} · ${wd} · ${time}`, trialAt: `${date}T${to24h(time)}` }
     }
   }
-  if (day || time) return `${day} · ${time}`.trim()
-  return ""
+  // Lead antigo sem data exata (só dia da semana + horário): sem base pra ordenar.
+  if (day || time) return { trial: `${day} · ${time}`.trim(), trialAt: "" }
+  return { trial: "", trialAt: "" }
 }
 
-const siteTrial = (l: Lead) => dateTrial(l.scheduled_date ?? "", l.time, l.day)
+// A partir de um instante ISO (agendamento do Agente Kimura), no fuso da academia (PT).
+function buildTrialFromIso(iso: string): Trial {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return { trial: "", trialAt: "" }
+  const tz = "America/Los_Angeles"
+  const dm = d.toLocaleDateString("pt-BR", { timeZone: tz, day: "2-digit", month: "2-digit" })
+  const wd = d.toLocaleDateString("pt-BR", { timeZone: tz, weekday: "short" }).replace(".", "")
+  const tm = d.toLocaleTimeString("pt-BR", { timeZone: tz, hour: "2-digit", minute: "2-digit" })
+  return { trial: `${dm} · ${wd} · ${tm}`, trialAt: iso }
+}
+
+const siteTrial = (l: Lead) => buildTrial(l.scheduled_date ?? "", l.time, l.day)
 
 /**
  * Funde as três fontes (leads do site, agendamentos do Agente Kimura e formulário do Meta Ads)
@@ -114,7 +132,7 @@ export function mergeLeads(
       email: l.email,
       phone: l.phone,
       program: l.program || "",
-      trial: siteTrial(l),
+      ...siteTrial(l),
       origin: l.utm_source || l.lead_id ? "Meta Ads (Site)" : "Orgânico",
       status: "agendado",
       createdAt: l.created_at,
@@ -133,7 +151,7 @@ export function mergeLeads(
       email: a.email,
       phone: "",
       program: a.classType || "",
-      trial: fmtClass(a.scheduledStartAt),
+      ...buildTrialFromIso(a.scheduledStartAt),
       origin: "Agente Kimura",
       status: "agendado",
       createdAt: a.scheduledStartAt,
@@ -156,6 +174,7 @@ export function mergeLeads(
       phone: m.phone,
       program: "",
       trial: "",
+      trialAt: "",
       origin: "Meta Ads (Formulário)",
       status: "pendente",
       createdAt: m.createdTime,
@@ -167,8 +186,10 @@ export function mergeLeads(
   for (const u of list) {
     const b = u.key && bookings[u.key]
     if (b) {
+      const t = buildTrial(b.date, b.time, b.day)
       u.program = b.program
-      u.trial = dateTrial(b.date, b.time, b.day)
+      u.trial = t.trial
+      u.trialAt = t.trialAt
       u.booked = true
       u.status = "agendado"
     }
