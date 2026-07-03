@@ -23,4 +23,11 @@ export const creatives: CreativeEntry[] = [
     duration: "~30 segundos",
     format: "Selfie + b-roll",
   },
+  {
+    slug: "bjj",
+    title: "Brazilian Jiu-Jitsu",
+    subtitle: "Adultos · Criativo 3",
+    duration: "~28 segundos",
+    format: "Selfie + b-roll",
+  },
 ]
