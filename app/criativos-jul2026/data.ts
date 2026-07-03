@@ -16,4 +16,11 @@ export const creatives: CreativeEntry[] = [
     duration: "~28 segundos",
     format: "Selfie + b-roll",
   },
+  {
+    slug: "kids",
+    title: "Kids & Família",
+    subtitle: "Pais e filhos · Criativo 2",
+    duration: "~30 segundos",
+    format: "Selfie + b-roll",
+  },
 ]
